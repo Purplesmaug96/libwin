@@ -3,6 +3,7 @@
 #include "libwin_msvcrt.h"
 
 #include <stdint.h>
+#include <pthread.h>
 
 #include "windef.h"
 
@@ -43,6 +44,10 @@ typedef struct libwin_struct_HKEY {
 	libwin_struct_HKEY* parent = NULL;
 }* HKEY;
 
+typedef struct {
+	pthread_t thread;
+} libwin_struct_thread_handle;
+
 typedef HANDLE HICON;
 typedef HANDLE HCURSOR;
 typedef HANDLE HBRUSH;
@@ -53,7 +58,7 @@ typedef SECURITY_ATTRIBUTES* LPSECURITY_ATTRIBUTES;
 
 typedef int32_t HRESULT;
 
-typedef DWORD(__stdcall* LPTHREAD_START_ROUTINE)(LPVOID lpThreadParameter);
+typedef DWORD(__stdcall* LPTHREAD_START_ROUTINE)(void* lpThreadParameter);
 
 #define FILE_ATTRIBUTE_READONLY             0x00000001
 #define FILE_ATTRIBUTE_HIDDEN               0x00000002

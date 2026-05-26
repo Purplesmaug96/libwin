@@ -11,14 +11,18 @@ build: ../build/libwin_tests ../build/libwin_tests_wine ../build/libwin_tests_mi
 
 ../build/libwin_tests: libwin_tests.cpp
 	mkdir -p ../build
+	rm -f $@
 	$(CXX_NATIVE) $(LIBWIN_INCLUDES) $(DOCTEST_INCLUDES) -o $@ $<
 
 ../build/libwin_tests_wine: libwin_tests.cpp
 	mkdir -p ../build
+	rm -f $@.exe.so
+	rm -f $@.exe
 	$(CXX_WINE) $(DOCTEST_INCLUDES) -I. -o $@ $<
 
 ../build/libwin_tests_mingw: libwin_tests.cpp
 	mkdir -p ../build
+	rm -f $@
 	$(CXX_MINGW) $(DOCTEST_INCLUDES) -static -o $@ $< -lwinmm
 
 clean:

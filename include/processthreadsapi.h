@@ -4,6 +4,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <pthread.h>
 
 #include "windef.h"
 #include "winnt.h"
@@ -21,7 +22,13 @@ static inline BOOL TerminateProcess(HANDLE hProcess, UINT uExitCode) {
 }
 
 static inline HANDLE CreateThread(LPSECURITY_ATTRIBUTES lpThreadAttributes, SIZE_T dwStackSize, LPTHREAD_START_ROUTINE lpStartAddress, LPVOID lpParameter, DWORD dwCreationFlags, LPDWORD lpThreadId) {
-	printf("Stubbed function CreateThread called\n");
+	libwin_struct_thread_handle* hThread = (libwin_struct_thread_handle*)malloc(sizeof(libwin_struct_thread_handle));
+
+	if(hThread) {
+		DWORD ret = pthread_create(&(hThread->thread), NULL, (void *(*)(void *))lpStartAddress, (void*)lpParameter);
+		return hThread;
+	}
+
 	return NULL;
 }
 

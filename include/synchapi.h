@@ -4,6 +4,7 @@
 
 #include <stdio.h>
 #include <unistd.h>
+#include <pthread.h>
 
 #include "windef.h"
 #include "winnt.h"
@@ -33,8 +34,8 @@ static inline void Sleep(DWORD dwMilliseconds) {
 }
 
 static inline DWORD WaitForSingleObject(HANDLE hHandle, DWORD dwMilliseconds) {
-	printf("Stubbed function WaitForSingleObject called\n");
-	return 0xffffffff; // WAIT_FAILED
+	// Assuming hHandle is an libwin_struct_thread_handle
+	return pthread_join(((libwin_struct_thread_handle*)hHandle)->thread, NULL) ? 0xffffffff : 0x00000000L; // i think WAIT_OBJECT_0 is for success??
 }
 
 #define EVENT_MODIFY_STATE 0
