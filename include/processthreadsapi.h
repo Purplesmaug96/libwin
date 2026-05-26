@@ -9,10 +9,14 @@
 #include "winnt.h"
 
 static inline HANDLE GetCurrentProcess() {
-	return NULL;
+	return (HANDLE)-1;
 }
 
 static inline BOOL TerminateProcess(HANDLE hProcess, UINT uExitCode) {
+	if(hProcess == (HANDLE)-1) {
+		exit(uExitCode);
+	}
+
 	return FALSE;
 }
 
