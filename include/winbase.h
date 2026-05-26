@@ -32,18 +32,22 @@ static inline LPSTR lstrcatA(LPSTR lpString1, LPCSTR lpString2) {
 
 static inline BOOL IsBadCodePtr(FARPROC lpfn) {
 	if (lpfn == NULL) {
-		return FALSE;
+		return TRUE;
 	}
 
 #if defined(__linux__) || defined(__ANDROID__)
 	// Taken from https://renatocunha.com/2015/12/msync-pointer-validity/
+	// Check if pointer is accessible memory
 
 	/* get the page size */
 	size_t page_size = sysconf(_SC_PAGESIZE);
 	/* find the address of the page that contains p */
 	void* base = (void*)((((size_t)lpfn) / page_size) * page_size);
-	/* call msync, if it returns non-zero, return false */
-	return msync(base, page_size, MS_ASYNC) == 0;
+	/* call msync, if it returns non-zero, the pointer is bad */
+	return msync(base, page_size, MS_ASYNC) != 0;
+#else
+	// On non-Linux platforms, assume pointer is valid if not NULL
+	return FALSE;
 #endif
 }
 

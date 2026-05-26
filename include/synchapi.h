@@ -29,7 +29,7 @@ static inline void LeaveCriticalSection(LPCRITICAL_SECTION lpCriticalSection) {
 }
 
 static inline void Sleep(DWORD dwMilliseconds) {
-	sleep(dwMilliseconds / 1000.0f);
+	usleep(dwMilliseconds * 1000UL);
 }
 
 static inline DWORD WaitForSingleObject(HANDLE hHandle, DWORD dwMilliseconds) {

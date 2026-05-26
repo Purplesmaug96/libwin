@@ -44,6 +44,7 @@ typedef int INT;
 typedef unsigned int UINT;
 typedef size_t SIZE_T;
 typedef char CHAR;
+typedef wchar_t WCHAR;
 typedef char TCHAR;
 typedef void VOID;
 

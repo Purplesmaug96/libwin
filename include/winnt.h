@@ -56,34 +56,54 @@ typedef int32_t HRESULT;
 typedef DWORD(__stdcall* LPTHREAD_START_ROUTINE)(LPVOID lpThreadParameter);
 
 static inline long InterlockedIncrement(long volatile* Addend) {
-	*Addend++;
-	return *Addend;
+	#ifdef __GNUC__
+	return __sync_add_and_fetch(Addend, 1);
+	#else
+	// Fallback for non-GCC compilers (not thread-safe)
+	return ++(*Addend);
+	#endif
 }
 
 static inline long long InterlockedIncrement64(long long volatile* Addend) {
-	*Addend++;
-	return *Addend;
+	#ifdef __GNUC__
+	return __sync_add_and_fetch(Addend, 1);
+	#else
+	// Fallback for non-GCC compilers (not thread-safe)
+	return ++(*Addend);
+	#endif
 }
 
 static inline long InterlockedDecrement(long volatile* Addend) {
-	*Addend--;
-	return *Addend;
+	#ifdef __GNUC__
+	return __sync_sub_and_fetch(Addend, 1);
+	#else
+	// Fallback for non-GCC compilers (not thread-safe)
+	return --(*Addend);
+	#endif
 }
 
 static inline long long InterlockedDecrement64(long long volatile* Addend) {
-	*Addend--;
-	return *Addend;
+	#ifdef __GNUC__
+	return __sync_sub_and_fetch(Addend, 1);
+	#else
+	// Fallback for non-GCC compilers (not thread-safe)
+	return --(*Addend);
+	#endif
 }
 
 // InterlockedCompareExchange taken from this issue: https://github.com/itsmattkc/dotnet9x/issues/19
+// Atomic compare and exchange for thread-safe operations
 
-// Reimplemented
 static inline LONG InterlockedCompareExchange(LONG volatile* dest, LONG xchg, LONG compare) {
+	#ifdef __GNUC__
+	// Use GCC atomic builtin for thread-safe operation
+	return __sync_val_compare_and_swap(dest, compare, xchg);
+	#else
+	// Fallback for non-GCC compilers (not thread-safe)
 	LONG temp = *dest;
-
 	if (compare == *dest) {
 		*dest = xchg;
 	}
-
 	return temp;
+	#endif
 }
