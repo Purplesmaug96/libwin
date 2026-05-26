@@ -393,25 +393,62 @@ DOCTEST_TEST_CASE("timeGetTime - monotonic increase") {
     }
 }
 
-/* ============================================================================
- * Stub Function Tests - Basic Validation
- * ============================================================================ */
-
-DOCTEST_TEST_CASE("GetCurrentProcess - returns NULL") {
+DOCTEST_TEST_CASE("GetCurrentProcess - gets current process handle") {
+    // On Windows/Wine this returns a pseudo-handle (non-NULL)
     HANDLE h = GetCurrentProcess();
-    DOCTEST_CHECK_EQ(h, (HANDLE)NULL);
+    DOCTEST_CHECK_NE(h, (HANDLE)NULL);
 }
 
-DOCTEST_TEST_CASE("ExitThread - type check") {
-    // We can't actually call ExitThread as it will exit the process
-    // Just verify it's defined
-    DOCTEST_CHECK(1);  // Placeholder
+// Simple thread function used to verify CreateThread/WaitForSingleObject behavior
+static DWORD CALLBACK test_thread_fn(LPVOID param) {
+    volatile LONG* p = (volatile LONG*)param;
+    if (p) {
+        InterlockedIncrement((LONG*)p);
+    }
+    return 0;
 }
 
-DOCTEST_TEST_CASE("OutputDebugStringA - type check") {
-    // Just verify it's defined and callable (it prints to stdout)
-    OutputDebugStringA("test debug message");
-    DOCTEST_CHECK(1);  // Placeholder
+DOCTEST_TEST_CASE("CreateThread + WaitForSingleObject - real vs stub") {
+    volatile LONG counter = 0;
+
+    // On Windows/Wine expect a real thread handle
+    HANDLE h = CreateThread(NULL, 0, test_thread_fn, (LPVOID)&counter, 0, NULL);
+    DOCTEST_CHECK_NE(h, (HANDLE)NULL);
+    if (h) {
+        // Wait for thread to finish
+        DWORD wait = WaitForSingleObject(h, 5000);
+        DOCTEST_CHECK_NE(wait, 0xFFFFFFFF); // Not WAIT_FAILED
+        // Close handle if CloseHandle available
+        #ifdef CloseHandle
+        CloseHandle(h);
+        #endif
+    }
+    // Thread should have incremented the counter
+    DOCTEST_CHECK_EQ(counter, 1L);
+}
+
+DOCTEST_TEST_CASE("DeleteFileA/GetFileAttributesA - file operations behave per platform") {
+    const char* tmpname = "libwin_test_temp_file.txt";
+    FILE* f = fopen(tmpname, "w");
+    DOCTEST_REQUIRE(f != NULL);
+    fprintf(f, "test\n");
+    fclose(f);
+
+    // Ensure file exists
+    DWORD attrs = GetFileAttributesA(tmpname);
+    // On Windows/Wine, expect a valid attribute result
+    DOCTEST_CHECK_NE(attrs, (DWORD)-1);
+    // Attempt to delete - should succeed
+    BOOL deleted = DeleteFileA(tmpname);
+    DOCTEST_CHECK_EQ(deleted, TRUE);
+    // File should not exist anymore
+    DOCTEST_CHECK_EQ(GetFileAttributesA(tmpname), (DWORD)-1);
+}
+
+DOCTEST_TEST_CASE("OutputDebugStringA - callable and does not crash") {
+    // We only verify it is callable. Output format is platform dependent.
+    OutputDebugStringA("libwin test debug message");
+    DOCTEST_CHECK(1);
 }
 
 /* ============================================================================
