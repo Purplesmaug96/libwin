@@ -1,0 +1,1 @@
+// This file exists solely to stop CMake from complaining that there are no sources.
