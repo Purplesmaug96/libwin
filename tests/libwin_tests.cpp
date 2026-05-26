@@ -14,6 +14,10 @@
  *   mkdir build && cd build && cmake .. && make && ./test_libwin
  */
 
+#define libwin_lasterror_local
+#define libwin_wsa_lasterror_local
+#include "windows.h"
+
 #define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
 #include <doctest/doctest.h>
 
@@ -23,8 +27,6 @@
 #include <time.h>
 #include <unistd.h>
 #include <sys/time.h>
-
-#include "include/windows.h"
 
 /* ============================================================================
  * Type Conversion Tests
@@ -172,8 +174,8 @@ DOCTEST_TEST_CASE("SetLastError and GetLastError - error code persistence") {
  * ============================================================================ */
 
 DOCTEST_TEST_CASE("InterlockedIncrement - single threaded") {
-    long value = 5;
-    long result = InterlockedIncrement(&value);
+    LONG value = 5;
+    LONG result = InterlockedIncrement(&value);
     
     // Should return new value (6)
     DOCTEST_CHECK_EQ(result, 6L);
@@ -181,7 +183,7 @@ DOCTEST_TEST_CASE("InterlockedIncrement - single threaded") {
 }
 
 DOCTEST_TEST_CASE("InterlockedIncrement - multiple operations") {
-    long value = 0;
+    LONG value = 0;
     DOCTEST_CHECK_EQ(InterlockedIncrement(&value), 1L);
     DOCTEST_CHECK_EQ(InterlockedIncrement(&value), 2L);
     DOCTEST_CHECK_EQ(InterlockedIncrement(&value), 3L);
@@ -189,16 +191,16 @@ DOCTEST_TEST_CASE("InterlockedIncrement - multiple operations") {
 }
 
 DOCTEST_TEST_CASE("InterlockedIncrement64 - 64-bit values") {
-    long long value = 1000000000000LL;
-    long long result = InterlockedIncrement64(&value);
+    LONGLONG value = 1000000000000LL;
+    LONGLONG result = InterlockedIncrement64(&value);
     
     DOCTEST_CHECK_EQ(result, 1000000000001LL);
     DOCTEST_CHECK_EQ(value, 1000000000001LL);
 }
 
 DOCTEST_TEST_CASE("InterlockedDecrement - single threaded") {
-    long value = 10;
-    long result = InterlockedDecrement(&value);
+    LONG value = 10;
+    LONG result = InterlockedDecrement(&value);
     
     // Should return new value (9)
     DOCTEST_CHECK_EQ(result, 9L);
@@ -206,7 +208,7 @@ DOCTEST_TEST_CASE("InterlockedDecrement - single threaded") {
 }
 
 DOCTEST_TEST_CASE("InterlockedDecrement - multiple operations") {
-    long value = 5;
+    LONG value = 5;
     DOCTEST_CHECK_EQ(InterlockedDecrement(&value), 4L);
     DOCTEST_CHECK_EQ(InterlockedDecrement(&value), 3L);
     DOCTEST_CHECK_EQ(InterlockedDecrement(&value), 2L);
@@ -214,15 +216,15 @@ DOCTEST_TEST_CASE("InterlockedDecrement - multiple operations") {
 }
 
 DOCTEST_TEST_CASE("InterlockedDecrement - negative values") {
-    long value = 0;
+    LONG value = 0;
     DOCTEST_CHECK_EQ(InterlockedDecrement(&value), -1L);
     DOCTEST_CHECK_EQ(InterlockedDecrement(&value), -2L);
     DOCTEST_CHECK_EQ(value, -2L);
 }
 
 DOCTEST_TEST_CASE("InterlockedDecrement64 - 64-bit values") {
-    long long value = 1000000000001LL;
-    long long result = InterlockedDecrement64(&value);
+    LONGLONG value = 1000000000001LL;
+    LONGLONG result = InterlockedDecrement64(&value);
     
     DOCTEST_CHECK_EQ(result, 1000000000000LL);
     DOCTEST_CHECK_EQ(value, 1000000000000LL);
@@ -416,6 +418,8 @@ DOCTEST_TEST_CASE("OutputDebugStringA - type check") {
  * Architecture Helper Tests
  * ============================================================================ */
 
+#ifdef libwin
+
 DOCTEST_TEST_CASE("Architecture detection - valid architecture defined") {
     // Verify that libwin_arch is defined to a valid value
     DOCTEST_CHECK_LT(libwin_arch, 8);  // Should be 0-7
@@ -427,6 +431,8 @@ DOCTEST_TEST_CASE("Architecture detection - detailed architecture defined") {
     DOCTEST_CHECK_LT(libwin_arch_detailed, 21);  // Should be 0-20
     DOCTEST_CHECK_GE(libwin_arch_detailed, 0);
 }
+
+#endif
 
 /* ============================================================================
  * End of Tests

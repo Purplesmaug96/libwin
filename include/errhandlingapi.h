@@ -4,7 +4,7 @@
 
 #include <stdint.h>
 
-#ifdef libwin_LASTERROR_LOCAL
+#ifdef libwin_lasterror_local
 #include "libwin_local_lasterror.h"
 #else
 extern uint32_t __windows_LastError;

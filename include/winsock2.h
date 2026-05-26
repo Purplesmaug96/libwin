@@ -29,7 +29,7 @@ static inline int WSAStartup(/*WORD*/ uint16_t wVersionRequired, LPWSADATA lpWSA
 	return SOCKET_ERROR;
 }
 
-#ifdef libwin_WSA_LASTERROR_LOCAL
+#ifdef libwin_wsa_lasterror_local
 #include "libwin_local_wsa_lasterror.h"
 #else
 extern uint32_t __winsock2_WSA_LastError;
