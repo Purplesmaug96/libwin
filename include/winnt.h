@@ -1,6 +1,6 @@
 #pragma once
 
-#include "__windows_shim_msvcrt.h"
+#include "libwin_msvcrt.h"
 
 #include <stdint.h>
 
@@ -27,20 +27,20 @@ typedef HANDLE HRGN;
 typedef struct {
 	char* name;
 	void* dlHandle;
-} __windows_shim_struct_HMODULE;
-typedef __windows_shim_struct_HMODULE* HMODULE;
+} libwin_struct_HMODULE;
+typedef libwin_struct_HMODULE* HMODULE;
 
 typedef HANDLE HDC; // Device Context
 typedef HANDLE HINSTANCE;
 typedef HANDLE HGDIOBJ;
 
-typedef struct __windows_shim_struct_HKEY {
+typedef struct libwin_struct_HKEY {
 	char* path;
 	char** pathSeperated; // List of folders (example: ["HKCU", "SOFTWARE", "Blizzard Entertainment"])
 	char* name;
 	int type;
 	uint32_t value;
-	__windows_shim_struct_HKEY* parent = NULL;
+	libwin_struct_HKEY* parent = NULL;
 }* HKEY;
 
 typedef HANDLE HICON;

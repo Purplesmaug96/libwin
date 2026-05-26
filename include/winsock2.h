@@ -1,6 +1,6 @@
 #pragma once
 
-#include "__windows_shim_msvcrt.h"
+#include "libwin_msvcrt.h"
 
 #include <arpa/inet.h>
 #include <netinet/in.h>
@@ -29,8 +29,8 @@ static inline int WSAStartup(/*WORD*/ uint16_t wVersionRequired, LPWSADATA lpWSA
 	return SOCKET_ERROR;
 }
 
-#ifdef __WINDOWS_SHIM_WSA_LASTERROR_LOCAL
-#include "__windows_shim_local_wsa_lasterror.h"
+#ifdef libwin_WSA_LASTERROR_LOCAL
+#include "libwin_local_wsa_lasterror.h"
 #else
 extern uint32_t __winsock2_WSA_LastError;
 #endif

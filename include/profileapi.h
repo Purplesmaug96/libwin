@@ -1,6 +1,6 @@
 #pragma once
 
-#include "__windows_shim_msvcrt.h"
+#include "libwin_msvcrt.h"
 
 #include <stdio.h>
 #include <time.h>
@@ -10,9 +10,9 @@
 
 // Implementation from https://stackoverflow.com/questions/12468331/queryperformancecounter-linux-equivalent
 
-#define __windows_shim_NSEC_PER_SEC 1000000000
+#define libwin_NSEC_PER_SEC 1000000000
 
-static inline __int64 __windows_shim_QueryPerformanceCounter() {
+static inline __int64 libwin_QueryPerformanceCounter() {
 	__int64 nsec_count, nsec_per_tick;
 	/*
 	 * clock_gettime() returns the number of secs. We translate that to number of nanosecs.
@@ -26,32 +26,32 @@ static inline __int64 __windows_shim_QueryPerformanceCounter() {
 		return -1;
 	}
 
-	nsec_count = ts1.tv_nsec + ts1.tv_sec * __windows_shim_NSEC_PER_SEC;
+	nsec_count = ts1.tv_nsec + ts1.tv_sec * libwin_NSEC_PER_SEC;
 
 	if (clock_getres(CLOCK_MONOTONIC, &ts2) != 0) {
 		printf("clock_getres() failed");
 		return -1;
 	}
 
-	nsec_per_tick = ts2.tv_nsec + ts2.tv_sec * __windows_shim_NSEC_PER_SEC;
+	nsec_per_tick = ts2.tv_nsec + ts2.tv_sec * libwin_NSEC_PER_SEC;
 
 	return (nsec_count / nsec_per_tick);
 }
 
-static inline __int64 __windows_shim_QueryPerformanceFrequency() {
+static inline __int64 libwin_QueryPerformanceFrequency() {
 	timespec ts2;
 	if (clock_getres(CLOCK_MONOTONIC, &ts2) != 0) {
 		printf("clock_getres() failed");
 		return -1;
 	}
-	return ts2.tv_nsec * __windows_shim_NSEC_PER_SEC;
+	return ts2.tv_nsec * libwin_NSEC_PER_SEC;
 }
 
 static inline BOOL QueryPerformanceCounter(LARGE_INTEGER* lpPerformanceCount) {
 	if (lpPerformanceCount == NULL) {
 		return FALSE;
 	}
-	lpPerformanceCount->QuadPart = __windows_shim_QueryPerformanceCounter();
+	lpPerformanceCount->QuadPart = libwin_QueryPerformanceCounter();
 	return TRUE;
 }
 
@@ -59,18 +59,18 @@ static inline BOOL QueryPerformanceFrequency(LARGE_INTEGER* lpPerformanceCount) 
 	if (lpPerformanceCount == NULL) {
 		return FALSE;
 	}
-	lpPerformanceCount->QuadPart = __windows_shim_QueryPerformanceFrequency();
+	lpPerformanceCount->QuadPart = libwin_QueryPerformanceFrequency();
 	return TRUE;
 }
 
 #ifdef __cplusplus
 
 static inline __int64 QueryPerformanceCounter() {
-	return __windows_shim_QueryPerformanceCounter();
+	return libwin_QueryPerformanceCounter();
 }
 
 static inline __int64 QueryPerformanceFrequency() {
-	return __windows_shim_QueryPerformanceFrequency();
+	return libwin_QueryPerformanceFrequency();
 }
 
 #endif

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "__windows_shim_msvcrt.h"
+#include "libwin_msvcrt.h"
 
 #include <stdarg.h>
 #include <stdio.h>
@@ -244,4 +244,4 @@ static inline BOOL GetMessageA(MSG* lpMsg, HWND hWnd, UINT wMsgFilterMin, UINT w
 
 #define INVALID_HANDLE_VALUE -1
 
-#include <__windows_shim_winuser_defs.h>
+#include <libwin_winuser_defs.h>

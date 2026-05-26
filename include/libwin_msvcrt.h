@@ -7,7 +7,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include <__windows_shim_arch_helper.h>
+#include <libwin_arch_helper.h>
 
 #ifdef __ANDROID__
 #include <android/log.h>
@@ -15,13 +15,13 @@
 #endif
 
 // Greatly increases comilation time
-// #define __windows_shim_BitScanReverse_x86_intrin
+// #define libwin_BitScanReverse_x86_intrin
 
-#if __windows_shim_arch == __windows_shim_arch_x86 && defined(__windows_shim_BitScanReverse_x86_intrin)
+#if libwin_arch == libwin_arch_x86 && defined(libwin_BitScanReverse_x86_intrin)
 #include <x86intrin.h>
 #endif
 
-#ifndef __windows_shim
+#ifndef libwin
 
 #ifndef __stdcall
 #define __stdcall
@@ -77,7 +77,7 @@
 
 #endif
 
-#define __windows_shim
+#define libwin
 
 #pragma diagnostic ignored "-Wunused-function"
 
@@ -137,7 +137,7 @@ static inline char * _ui64tow(unsigned long long value, char *buffer, int radix)
 // Taken from geeksforgeeks - https://www.geeksforgeeks.org/c/implement-itoa/
 
 // A utility function to reverse a string
-static inline void __windows_shim_reverse(char str[], int length) {
+static inline void libwin_reverse(char str[], int length) {
 	int start = 0;
 	int end = length - 1;
 	while (start < end) {
@@ -149,7 +149,7 @@ static inline void __windows_shim_reverse(char str[], int length) {
 	}
 }
 // Implementation of citoa()
-static inline char* __windows_shim_itoa(int num, char* str, int base) {
+static inline char* libwin_itoa(int num, char* str, int base) {
 	int i = 0;
 	bool isNegative = false;
 
@@ -184,54 +184,54 @@ static inline char* __windows_shim_itoa(int num, char* str, int base) {
 	str[i] = '\0'; // Append string terminator
 
 	// Reverse the string
-	__windows_shim_reverse(str, i);
+	libwin_reverse(str, i);
 
 	return str;
 }
 
 static inline char* _itoa(int value, char* buffer, int radix) {
-	return __windows_shim_itoa(value, buffer, radix);
+	return libwin_itoa(value, buffer, radix);
 }
 
 static inline char* _ltoa(long value, char* buffer, int radix) {
-	return __windows_shim_itoa(value, buffer, radix);
+	return libwin_itoa(value, buffer, radix);
 }
 
 static inline char* _ultoa(unsigned long value, char* buffer, int radix) {
-	return __windows_shim_itoa(value, buffer, radix);
+	return libwin_itoa(value, buffer, radix);
 }
 
 static inline char* _i64toa(long long value, char* buffer, int radix) {
-	return __windows_shim_itoa(value, buffer, radix);
+	return libwin_itoa(value, buffer, radix);
 }
 
 static inline char* _ui64toa(unsigned long long value, char* buffer, int radix) {
-	return __windows_shim_itoa(value, buffer, radix);
+	return libwin_itoa(value, buffer, radix);
 }
 
 // This implementation is likely incorrect, will need special handling
-#ifdef __WINDOWS_SHIM_ENABLE_XTOW
+#ifdef libwin_ENABLE_XTOW
 
 // Wide
 
 static inline char* _itow(int value, char* buffer, int radix) {
-	return __windows_shim_itoa(value, buffer, radix);
+	return libwin_itoa(value, buffer, radix);
 }
 
 static inline char* _ltow(long value, char* buffer, int radix) {
-	return __windows_shim_itoa(value, buffer, radix);
+	return libwin_itoa(value, buffer, radix);
 }
 
 static inline char* _ultow(unsigned long value, char* buffer, int radix) {
-	return __windows_shim_itoa(value, buffer, radix);
+	return libwin_itoa(value, buffer, radix);
 }
 
 static inline char* _i64tow(long long value, char* buffer, int radix) {
-	return __windows_shim_itoa(value, buffer, radix);
+	return libwin_itoa(value, buffer, radix);
 }
 
 static inline char* _ui64tow(unsigned long long value, char* buffer, int radix) {
-	return __windows_shim_itoa(value, buffer, radix);
+	return libwin_itoa(value, buffer, radix);
 }
 
 #endif
@@ -299,7 +299,7 @@ static inline int sprintf_s(char* buffer, const char* format, ...) {
 // #define strncpy_s strncpy
 // #define sprintf_s sprintf
 
-#if __windows_shim_arch == __windows_shim_arch_x86 && defined(__windows_shim_BitScanReverse_x86_intrin)
+#if libwin_arch == libwin_arch_x86 && defined(libwin_BitScanReverse_x86_intrin)
 
 static unsigned char _BitScanReverse(uint32_t* Index, uint32_t Mask) {
 	if (Mask == 0) {

@@ -1,6 +1,6 @@
 #pragma once
 
-#ifdef __windows_shim_dissalow_windows_h
+#ifdef libwin_dissalow_windows_h
 #error Including 'windows.h' is disallowed.
 #endif
 
@@ -16,7 +16,7 @@
 
 // clang-format: off
 
-#include "__windows_shim_msvcrt.h"
+#include "libwin_msvcrt.h"
 
 #include "debugapi.h"
 #include "errhandlingapi.h"

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "__windows_shim_msvcrt.h"
+#include "libwin_msvcrt.h"
 
 enum {
 	DLL_PROCESS_ATTACH = 0,

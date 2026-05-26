@@ -12,7 +12,7 @@
 // Vibecoded
 
 // Helper: Ensure the "registry" directory exists
-static inline void __windows_shim_ensure_directory() {
+static inline void libwin_ensure_directory() {
 	struct stat st = { 0 };
 	if (stat("registry", &st) == -1) {
 #ifdef _WIN32
@@ -24,11 +24,11 @@ static inline void __windows_shim_ensure_directory() {
 }
 
 // Helper: Construct the file path based on the hive
-static inline void __windows_shim_get_hive_filepath(char* buffer, size_t size, const char* hive) {
+static inline void libwin_get_hive_filepath(char* buffer, size_t size, const char* hive) {
 	snprintf(buffer, size, "registry/%s.json", hive);
 }
 
-struct json_object* __windows_shim_get_nested_folder(struct json_object* root, char** folders, int create_if_missing) {
+struct json_object* libwin_get_nested_folder(struct json_object* root, char** folders, int create_if_missing) {
 	struct json_object* current = root;
 	if (!folders || !folders[0]) {
 		return NULL;
@@ -50,12 +50,12 @@ struct json_object* __windows_shim_get_nested_folder(struct json_object* root, c
 	return current;
 }
 
-static inline void __windows_shim_writeJson(HKEY key) {
+static inline void libwin_writeJson(HKEY key) {
 	if (!key || !key->pathSeperated || !key->pathSeperated[0]) {
 		return;
 	}
 
-	__windows_shim_ensure_directory();
+	libwin_ensure_directory();
 	char filepath[256];
 	snprintf(filepath, sizeof(filepath), "registry/%s.json", key->pathSeperated[0]);
 
@@ -65,7 +65,7 @@ static inline void __windows_shim_writeJson(HKEY key) {
 	}
 
 	// Traverse to the deepest folder
-	struct json_object* target_folder = __windows_shim_get_nested_folder(root, key->pathSeperated, 1);
+	struct json_object* target_folder = libwin_get_nested_folder(root, key->pathSeperated, 1);
 
 	struct json_object* entries_array;
 	if (!json_object_object_get_ex(target_folder, "entries", &entries_array)) {
@@ -100,7 +100,7 @@ static inline void __windows_shim_writeJson(HKEY key) {
 	json_object_put(root);
 }
 
-static inline bool __windows_shim_readJson(HKEY key) {
+static inline bool libwin_readJson(HKEY key) {
 	if (!key || !key->pathSeperated || !key->pathSeperated[0]) {
 		return 0;
 	}
@@ -113,7 +113,7 @@ static inline bool __windows_shim_readJson(HKEY key) {
 		return 0;
 	}
 
-	struct json_object* target_folder = __windows_shim_get_nested_folder(root, key->pathSeperated, 0);
+	struct json_object* target_folder = libwin_get_nested_folder(root, key->pathSeperated, 0);
 	struct json_object* entries_array;
 
 	if (target_folder && json_object_object_get_ex(target_folder, "entries", &entries_array)) {

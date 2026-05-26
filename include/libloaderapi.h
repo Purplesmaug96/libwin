@@ -1,6 +1,6 @@
 #pragma once
 
-#include "__windows_shim_msvcrt.h"
+#include "libwin_msvcrt.h"
 
 #ifdef __linux__
 #include <dlfcn.h>
@@ -19,7 +19,7 @@
 // Posted by Fred Foo, modified by community. See post 'Timeline' for change history
 // Retrieved 2026-05-15, License - CC BY-SA 2.5
 
-static inline char* __windows_shim_program_path() {
+static inline char* libwin_program_path() {
 	char* path = (char*)malloc(MAX_PATH);
 	if (path != NULL) {
 		if (readlink("/proc/self/exe", path, MAX_PATH) == -1) {
@@ -32,7 +32,7 @@ static inline char* __windows_shim_program_path() {
 
 static inline DWORD GetModuleFileNameA(HMODULE hModule, LPSTR lpFilename, DWORD nSize) {
 	if (hModule == NULL) {
-		char* fileName = __windows_shim_program_path();
+		char* fileName = libwin_program_path();
 		if (fileName == NULL) {
 			return FALSE;
 		}
@@ -50,7 +50,7 @@ static inline FARPROC GetProcAddress(HMODULE hModule, LPCSTR lpProcName);
 
 static inline HMODULE LoadLibraryA(LPCSTR lpLibFileName) {
 	printf("Attempting to load dynamic lib '%s'.\n", lpLibFileName);
-	HMODULE lib = (HMODULE)malloc(sizeof(__windows_shim_struct_HMODULE));
+	HMODULE lib = (HMODULE)malloc(sizeof(libwin_struct_HMODULE));
 
 	lib->name = (char*)lpLibFileName;
 	lib->dlHandle = dlopen(lpLibFileName, RTLD_LAZY);

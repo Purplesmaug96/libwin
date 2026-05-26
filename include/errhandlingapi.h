@@ -1,11 +1,11 @@
 #pragma once
 
-#include "__windows_shim_msvcrt.h"
+#include "libwin_msvcrt.h"
 
 #include <stdint.h>
 
-#ifdef __WINDOWS_SHIM_LASTERROR_LOCAL
-#include "__windows_shim_local_lasterror.h"
+#ifdef libwin_LASTERROR_LOCAL
+#include "libwin_local_lasterror.h"
 #else
 extern uint32_t __windows_LastError;
 #endif
